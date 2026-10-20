@@ -1,0 +1,559 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ryanair (A) Scenario Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;600;700&family=Source+Serif+4:wght@400;600&display=swap">
+<style>
+:root{
+ --color-bg:#F6F7F9;--color-panel:#FFFFFF;--color-fg:#1A2233;--color-fg-muted:#5B6576;--color-border-line:#DDE2EA;
+ --color-ok:#1B7F4B;--color-bad:#C2410C;--cds-chart-grid:#E6EAF0;--cds-chart-axis:#9AA4B2;--cds-chart-reference:#6B7685;--cds-chart-muted:#B9C3D1;
+ --cds-surface-popover:#FFFFFF;--cds-border:#DDE2EA;--cds-shadow-popover:0 4px 16px rgba(20,30,50,.12);--cds-text-secondary:#5B6576;
+ --ry-accent:#2457D6;
+ --font-anthropic-sans:'Public Sans',system-ui,-apple-system,'Segoe UI',Arial,sans-serif;--font-anthropic-serif:'Source Serif 4',Georgia,'Times New Roman',serif;
+ --cds-gap-xs:4px;--cds-gap-sm:8px;--cds-gap-md:16px;--cds-gap-lg:28px;--cds-pad-xs:4px;--cds-pad-sm:8px;--cds-pad-md:16px;--cds-pad-lg:20px;
+ --cds-radius:8px;--cds-font-size-caption:13px;--cds-font-size-body:15px;--cds-font-size-heading:17px;--cds-font-size-title:32px;--cds-font-weight-medium:600;--cds-dur-slow:.3s;
+}
+@media (prefers-color-scheme: dark){:root{
+ --color-bg:#0F1522;--color-panel:#172031;--color-fg:#E7ECF4;--color-fg-muted:#A3AEC0;--color-border-line:#2A3549;
+ --color-ok:#4ADE80;--color-bad:#FB923C;--cds-chart-grid:#243046;--cds-chart-axis:#55627A;--cds-chart-reference:#8A96AA;--cds-chart-muted:#4A5873;
+ --cds-surface-popover:#1E293C;--cds-border:#2A3549;--cds-shadow-popover:0 4px 16px rgba(0,0,0,.4);--cds-text-secondary:#A3AEC0;--ry-accent:#6E97FF;color-scheme:dark}}
+html,body{margin:0;background:var(--color-bg);color:var(--color-fg)}
+.ry-page{max-width:1200px;margin-inline:auto;padding-block:32px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.dash-skeleton{color:transparent;background:var(--color-border-line);border-radius:4px}
+.ry-foot-credit{margin-top:24px}
+
+.ry{display:flex;flex-direction:column;gap:var(--cds-gap-lg);font-family:var(--font-anthropic-sans);color:var(--color-fg)}
+.ry-title{margin:0;font-family:var(--font-anthropic-serif);font-weight:400;font-size:var(--cds-font-size-title);text-wrap:balance}
+.ry-take{margin:var(--cds-gap-xs) 0 0;font-size:var(--cds-font-size-body);color:var(--color-fg-muted);max-width:72ch;line-height:1.5}
+.ry-take b{color:var(--color-fg)}
+.ry-section{margin:var(--cds-gap-sm) 0 0;font-size:var(--cds-font-size-heading);font-weight:var(--cds-font-weight-medium)}
+.ry-card{background:var(--color-panel);border:1px solid var(--color-border-line);border-radius:var(--cds-radius);padding:var(--cds-pad-lg);display:flex;flex-direction:column;gap:var(--cds-gap-sm);min-width:0}
+.ry-card h3{margin:0;font-size:var(--cds-font-size-heading);font-weight:var(--cds-font-weight-medium)}
+.ry-note{margin:0;font-size:var(--cds-font-size-caption);color:var(--color-fg-muted);line-height:1.45}
+.ry-controls{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,12rem),1fr));gap:var(--cds-gap-md)}
+.ry-ctl{display:flex;flex-direction:column;gap:var(--cds-gap-xs)}
+.ry-ctl-head{display:flex;justify-content:space-between;gap:var(--cds-gap-sm);align-items:baseline}
+.ry-ctl label{font-size:var(--cds-font-size-caption);color:var(--color-fg-muted)}
+.ry-ctl output{font-variant-numeric:tabular-nums;font-weight:var(--cds-font-weight-medium)}
+.ry-ctl input{width:100%}
+.ry-ctl-foot{display:flex;justify-content:space-between;align-items:center;gap:var(--cds-gap-sm);flex-wrap:wrap}
+.ry-btn{font:inherit;font-size:var(--cds-font-size-caption);padding:var(--cds-pad-xs) var(--cds-pad-sm);border:1px solid var(--color-border-line);border-radius:var(--cds-radius);background:var(--color-bg);color:var(--color-fg);cursor:pointer}
+.ry-btn:focus-visible{outline:2px solid var(--color-fg);outline-offset:2px}
+.ry-tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,10.5rem),1fr));gap:var(--cds-gap-md)}
+.ry-tile{background:var(--color-panel);border:1px solid var(--color-border-line);border-radius:var(--cds-radius);padding:var(--cds-pad-md);display:flex;flex-direction:column;gap:var(--cds-gap-xs);min-width:0}
+.ry-tile-label{font-size:var(--cds-font-size-caption);color:var(--color-fg-muted)}
+.ry-big{font-family:var(--font-anthropic-serif);font-weight:400;font-size:var(--cds-font-size-title);font-variant-numeric:tabular-nums;line-height:1.1}
+.ry-big.ry-pos{color:var(--color-ok)}
+.ry-big.ry-neg{color:var(--color-bad)}
+.ry-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,24rem),1fr));gap:var(--cds-gap-md)}
+.ry-chart{position:relative;min-height:270px}
+.ry-tip{position:absolute;pointer-events:none;background:var(--cds-surface-popover);border:1px solid var(--cds-border);border-radius:var(--cds-radius);box-shadow:var(--cds-shadow-popover);padding:var(--cds-pad-xs) var(--cds-pad-sm);font-size:var(--cds-font-size-caption);white-space:nowrap}
+.ry-tip-head{color:var(--cds-text-secondary)}
+.ry-heat-wrap{overflow-x:auto}
+.ry-heat{display:grid;grid-template-columns:6.5rem repeat(12,minmax(2.7rem,1fr));gap:2px;font-size:var(--cds-font-size-caption);font-variant-numeric:tabular-nums;min-width:40rem}
+.ry-heat-cell{padding:6px 2px;text-align:center;border-radius:3px}
+.ry-heat-head{padding:6px 2px;text-align:center;color:var(--color-fg-muted)}
+.ry-heat-row{padding:6px 4px;color:var(--color-fg-muted)}
+.ry-heat-cur{outline:2px solid var(--color-fg);outline-offset:-2px;font-weight:var(--cds-font-weight-medium)}
+.ry-bars{display:flex;flex-direction:column;gap:var(--cds-gap-md)}
+.ry-bar-row{display:grid;grid-template-columns:minmax(0,12rem) minmax(0,1fr) auto;gap:var(--cds-gap-sm);align-items:center}
+.ry-bar-label{font-size:var(--cds-font-size-caption);line-height:1.3}
+.ry-track{position:relative;height:22px}
+.ry-bar{position:absolute;top:0;bottom:0;border-radius:4px;min-width:3px}
+.ry-val{font-size:var(--cds-font-size-caption);font-variant-numeric:tabular-nums;white-space:nowrap}
+.ry-ref{border-top:1px dashed var(--cds-chart-reference);padding-top:var(--cds-gap-sm)}
+.ry-table-wrap{max-height:24rem;overflow:auto}
+.ry-table{width:100%;border-collapse:collapse;font-size:var(--cds-font-size-caption);font-variant-numeric:tabular-nums}
+.ry-table th{position:sticky;top:0;background:var(--color-panel);text-align:left;font-weight:var(--cds-font-weight-medium);color:var(--color-fg-muted);padding:6px 8px;border-bottom:1px solid var(--color-border-line)}
+.ry-table td{padding:6px 8px;border-bottom:1px solid var(--color-border-line);vertical-align:top}
+.ry-table .ry-num{text-align:right}
+.ry [data-dash-source-state=empty]{color:transparent}
+.ry [data-dash-source-state=refreshing]{opacity:.5;transition:opacity var(--cds-dur-slow)}
+</style>
+</head>
+<body>
+<main class="ry-page">
+<div class="ry">
+  <header id="overview">
+    <h1 class="ry-title">Ryanair (A) scenario dashboard</h1>
+    <p class="ry-take">At a <b class="ry-p-cost">—</b> seat-cost advantage, a <b class="ry-p-lf">—</b> load factor and a <b class="ry-p-fare">—</b> fare, Ryanair’s annual operating result is I£<b class="ry-scn dash-skeleton" data-source="scenarios" data-field="profit_m">—</b>m, and it breaks even at <b class="ry-scn dash-skeleton" data-source="scenarios" data-field="be_lf">—</b>% load. Matching I£98 on every ticket would cost the incumbents I£<b class="ry-ret dash-skeleton" data-source="retaliation" data-field="broad_m">—</b>m a year against a route profit of I£<b class="dash-skeleton" data-source="route_economics" data-field="route_profit_m">—</b>m.</p>
+  </header>
+
+  <section id="controls" class="ry-card">
+    <h3>Scenario</h3>
+    <div class="ry-controls">
+      <div class="ry-ctl"><div class="ry-ctl-head"><label for="ry-cost">Ryanair seat cost below incumbents</label><output id="ry-cost-out">—</output></div><input id="ry-cost" type="range" min="0" max="50" step="5"></div>
+      <div class="ry-ctl"><div class="ry-ctl-head"><label for="ry-lf">Ryanair load factor</label><output id="ry-lf-out">—</output></div><input id="ry-lf" type="range" min="40" max="95" step="5"></div>
+      <div class="ry-ctl"><div class="ry-ctl-head"><label for="ry-fare">Realised fare (round trip)</label><output id="ry-fare-out">—</output></div><input id="ry-fare" type="range" min="70" max="120" step="2"></div>
+      <div class="ry-ctl"><div class="ry-ctl-head"><label for="ry-leak">Full-fare travellers trading down</label><output id="ry-leak-out">—</output></div><input id="ry-leak" type="range" min="0" max="30" step="1"></div>
+      <div class="ry-ctl"><div class="ry-ctl-head"><label for="ry-div">Ryanair passengers taken from incumbents</label><output id="ry-div-out">—</output></div><input id="ry-div" type="range" min="0" max="100" step="10"></div>
+    </div>
+    <div class="ry-ctl-foot"><p class="ry-note">Base case: 30% cheaper seats, 70% full, I£98 realised, 10% fare-fence leakage, half of passengers taken from the incumbents.</p><button type="button" class="ry-btn ry-reset">Reset to base case</button></div>
+  </section>
+
+  <h2 id="ryanair" class="ry-section">Ryanair at this scenario</h2>
+  <div class="ry-tiles">
+    <div class="ry-tile"><span class="ry-tile-label">Annual operating result</span><span class="ry-big"><span>I£</span><span class="ry-scn ry-profit dash-skeleton" data-source="scenarios" data-field="profit_m">—</span><span>m</span></span><span class="ry-note">Contribution minus flight costs</span></div>
+    <div class="ry-tile"><span class="ry-tile-label">Break-even load factor</span><span class="ry-big"><span class="ry-scn dash-skeleton" data-source="scenarios" data-field="be_lf">—</span><span>%</span></span><span class="ry-note">Over 100% means impossible</span></div>
+    <div class="ry-tile"><span class="ry-tile-label">Margin of safety</span><span class="ry-big"><span class="ry-scn dash-skeleton" data-source="scenarios" data-field="margin_safety">—</span><span>%</span></span><span class="ry-note">Passengers above break-even</span></div>
+    <div class="ry-tile"><span class="ry-tile-label">Contribution per passenger</span><span class="ry-big"><span>I£</span><span class="ry-scn dash-skeleton" data-source="scenarios" data-field="contribution">—</span></span><span class="ry-note">Fare minus selling, catering, handling</span></div>
+    <div class="ry-tile"><span class="ry-tile-label">Flight cost per seat</span><span class="ry-big"><span>I£</span><span class="ry-scn dash-skeleton" data-source="scenarios" data-field="seat_cost">—</span></span><span class="ry-note">Incumbent level is I£<span data-source="route_economics" data-field="inc_seat_cost">—</span></span></div>
+    <div class="ry-tile"><span class="ry-tile-label">Cash runway on I£1m</span><span class="ry-big"><span class="ry-scn dash-skeleton" data-source="scenarios" data-field="runway_months">—</span><span class="ry-runway-unit"> months</span></span><span class="ry-note ry-runway-note">At this year’s loss</span></div>
+  </div>
+
+  <div class="ry-grid">
+    <section id="profit-by-load" class="ry-card">
+      <h3>Operating result by load factor</h3>
+      <p class="ry-note">I£ million a year at the chosen seat cost and fare. The dashed line is break-even; the dot is the chosen load.</p>
+      <div class="ry-chart" id="ry-line" data-source="scenarios"></div>
+    </section>
+    <section id="heatmap" class="ry-card">
+      <h3>Operating result by seat cost and load factor</h3>
+      <p class="ry-note">I£ million a year at the chosen fare. Red cells are losses, blue cells are profits; the outlined cell is the scenario.</p>
+      <div class="ry-heat-wrap"><div class="ry-heat" id="ry-heat" data-source="scenarios"></div></div>
+    </section>
+  </div>
+
+  <h2 id="incumbents" class="ry-section">Incumbent retaliation</h2>
+  <div class="ry-grid">
+    <section id="retaliation-cost" class="ry-card">
+      <h3>What each response costs Aer Lingus and BA</h3>
+      <p class="ry-note">I£ million a year, both carriers combined, if they match Ryanair’s fare. Accommodation is lost contribution on passengers Ryanair takes.</p>
+      <div class="ry-bars" id="ry-ret-bars">
+        <div class="ry-bar-row"><span class="ry-bar-label">Match on every ticket</span><div class="ry-track"><div class="ry-bar" data-k="broad"></div></div><span class="ry-val"><span class="ry-ret" data-source="retaliation" data-field="broad_m">—</span></span></div>
+        <div class="ry-bar-row"><span class="ry-bar-label">Match advance-purchase fares only</span><div class="ry-track"><div class="ry-bar" data-k="selective"></div></div><span class="ry-val"><span class="ry-ret" data-source="retaliation" data-field="selective_m">—</span></span></div>
+        <div class="ry-bar-row"><span class="ry-bar-label">Accommodate Ryanair</span><div class="ry-track"><div class="ry-bar" data-k="acc"></div></div><span class="ry-val"><span class="ry-acc" data-source="accommodation" data-field="low_m">—</span>–<span class="ry-acc" data-source="accommodation" data-field="high_m">—</span></span></div>
+        <div class="ry-bar-row ry-ref"><span class="ry-bar-label">Reference: route operating profit</span><div class="ry-track"><div class="ry-bar" data-k="profit"></div></div><span class="ry-val"><span data-source="route_economics" data-field="route_profit_m">—</span></span></div>
+      </div>
+      <p class="ry-note ry-ret-verdict"></p>
+    </section>
+    <section id="seats" class="ry-card">
+      <h3>Why retaliation is cheap: empty seats</h3>
+      <p class="ry-note">Round trips a year. Incumbents fly 60–70% full, so a passenger they keep fills a seat that would otherwise fly empty.</p>
+      <div class="ry-bars" id="ry-seat-bars">
+        <div class="ry-bar-row"><span class="ry-bar-label">Rail-and-ferry travellers</span><div class="ry-track"><div class="ry-bar" data-k="surface"></div></div><span class="ry-val"><span data-source="case_inputs" data-field="value" data-where="key=surface_pax">—</span></span></div>
+        <div class="ry-bar-row"><span class="ry-bar-label">Incumbent air passengers</span><div class="ry-track"><div class="ry-bar" data-k="air"></div></div><span class="ry-val"><span data-source="case_inputs" data-field="value" data-where="key=air_pax">—</span></span></div>
+        <div class="ry-bar-row"><span class="ry-bar-label">Incumbent empty seats</span><div class="ry-track"><div class="ry-bar" data-k="spare"></div></div><span class="ry-val"><span data-source="route_economics" data-field="spare_low">—</span>–<span data-source="route_economics" data-field="spare_high">—</span></span></div>
+        <div class="ry-bar-row"><span class="ry-bar-label">Ryanair total capacity</span><div class="ry-track"><div class="ry-bar" data-k="cap"></div></div><span class="ry-val"><span data-source="route_economics" data-field="capacity">—</span></span></div>
+      </div>
+    </section>
+  </div>
+
+  <h2 id="case-data" class="ry-section">Case data and cost assumptions</h2>
+  <div class="ry-grid">
+    <section id="facts" class="ry-card">
+      <h3>Case facts and assumptions</h3>
+      <p class="ry-note">Figures from Rivkin (2007), HBS Case 9-700-115. I£ = Irish pounds.</p>
+      <div class="ry-table-wrap"><table class="ry-table" id="ry-facts" data-source="case_inputs" data-row-key="key"><thead><tr><th data-field="item">Item</th><th class="ry-num" data-field="value">Value</th><th data-field="unit">Unit</th><th data-field="source">Source</th></tr></thead><tbody></tbody></table></div>
+    </section>
+    <section id="costs" class="ry-card">
+      <h3>Exhibit 4 costs and how they behave</h3>
+      <p class="ry-note">BA’s 1986 average cost per round-trip passenger, used as the incumbents’ cost proxy. The case gives no Ryanair costs.</p>
+      <div class="ry-table-wrap"><table class="ry-table" id="ry-costs" data-source="exhibit4" data-row-key="line"><thead><tr><th data-field="label">Cost line</th><th class="ry-num" data-field="value">I£</th><th data-field="classification">Behaviour</th></tr></thead><tbody></tbody></table></div>
+    </section>
+  </div>
+  <p class="ry-note">Method: incumbent flight cost per seat = (cost per passenger − passenger-variable cost) × 65% load. Ryanair keeps selling cost at the Exhibit 4 share of fare. Capacity assumes 365 days of operation. Analysis as of April 1986; no hindsight.</p>
+</div>
+<p class="ry-note ry-foot-credit">Based on Rivkin, J. W. (2007), <i>Dogfight over Europe: Ryanair (A)</i>, HBS Case 9-700-115. Figures are scenarios, not forecasts.</p>
+</main>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<script>
+const RY_DATA = { case_inputs: [
+{"key":"ryanair_fare","item":"Ryanair proposed fare (unrestricted return)","value":98,"unit":"I£","source":"Case p. 5"},
+{"key":"seats","item":"Seats per Ryanair aircraft (turboprop)","value":44,"unit":"seats","source":"Case p. 5"},
+{"key":"round_trips","item":"Ryanair round trips per day","value":4,"unit":"per day","source":"Case p. 5"},
+{"key":"operating_days","item":"Operating days per year","value":365,"unit":"days","source":"Assumption A2 (not stated)"},
+{"key":"air_pax","item":"Round-trip air passengers per year","value":500000,"unit":"passengers","source":"Case p. 5"},
+{"key":"surface_pax","item":"Rail-and-ferry round trips per year","value":750000,"unit":"trips","source":"Case p. 5"},
+{"key":"inc_unrestricted","item":"Incumbents' cheapest unrestricted return","value":208,"unit":"I£","source":"Case p. 5"},
+{"key":"inc_advance","item":"Incumbents' advance-purchase return","value":99,"unit":"I£","source":"Case p. 5"},
+{"key":"surface_fare","item":"Cheapest rail-and-ferry fare","value":55,"unit":"I£","source":"Case p. 5"},
+{"key":"inc_avg_rev","item":"Incumbent revenue per round-trip passenger","value":166.5,"unit":"I£","source":"Exhibit 4 (BA proxy)"},
+{"key":"inc_cost","item":"Incumbent cost per round-trip passenger","value":155.1,"unit":"I£","source":"Exhibit 4 (BA proxy)"},
+{"key":"inc_profit","item":"Incumbent operating profit per round-trip passenger","value":11.4,"unit":"I£","source":"Exhibit 4 (BA proxy)"},
+{"key":"inc_lf_low","item":"Incumbent load factor, low","value":0.6,"unit":"share","source":"Case p. 5 (managers' belief)"},
+{"key":"inc_lf_high","item":"Incumbent load factor, high","value":0.7,"unit":"share","source":"Case p. 5 (managers' belief)"},
+{"key":"capital","item":"Ryanair founding capital","value":1000000,"unit":"I£","source":"Case p. 5"}
+], exhibit4: [
+{"line":"staff","label":"Staff","value":35.7,"classification":"Flight-related","passenger_share":0},
+{"line":"depreciation","label":"Depreciation and amortisation","value":8.6,"classification":"Flight-related","passenger_share":0},
+{"line":"fuel","label":"Fuel and oil","value":31.8,"classification":"Flight-related","passenger_share":0},
+{"line":"engineering","label":"Engineering and other aircraft costs","value":9.8,"classification":"Flight-related","passenger_share":0},
+{"line":"selling","label":"Selling costs","value":18.0,"classification":"Passenger-variable","passenger_share":1},
+{"line":"leases","label":"Aircraft operating leases","value":3.4,"classification":"Flight-related","passenger_share":0},
+{"line":"landing","label":"Landing fees and en route charges","value":11.7,"classification":"Flight-related","passenger_share":0},
+{"line":"handling","label":"Handling, catering and other","value":16.6,"classification":"Semi-variable (half per passenger)","passenger_share":0.5},
+{"line":"accommodation","label":"Accommodation, ground equipment and other","value":19.5,"classification":"Flight-related","passenger_share":0}
+] };
+window.dash = (() => {
+  const defaults = { cost_adv: 30, lf: 70, fare: 98, leak: 10, diverted: 50 };
+  let params = { ...defaults };
+  const calcs = {};
+  const subs = [];
+  const run = () => subs.forEach((f) => f());
+  const accent = getComputedStyle(document.documentElement).getPropertyValue('--ry-accent').trim() || '#2457D6';
+  window.addEventListener('resize', run);
+  return {
+    colors: [accent],
+    calc(id, spec) { calcs[id] = spec.fn(...spec.inputs.map((i) => RY_DATA[i] || calcs[i])); },
+    data(id) { const d = RY_DATA[id] || calcs[id]; return { status: d ? 'ok' : 'missing', data: d || [] }; },
+    onData(fn) { subs.push(fn); fn(); },
+    params() { return { ...params }; },
+    setParams(o) { Object.assign(params, o); run(); },
+    resetParams() { params = { ...defaults }; run(); },
+  };
+})();
+
+
+dash.calc('route_economics', {
+  inputs: ['case_inputs', 'exhibit4'],
+  title: 'Route economics',
+  description: 'Ryanair capacity, incumbent seat cost, empty seats and route profit from the case facts and Exhibit 4.',
+  fn: (case_inputs, exhibit4) => {
+    const v = Object.fromEntries(case_inputs.map((r) => [r.key, Number(r.value)]));
+    const ex = Object.fromEntries(exhibit4.map((r) => [r.line, Number(r.value)]));
+    const r2 = (x) => Math.round(x * 100) / 100;
+    const incLf = (v.inc_lf_low + v.inc_lf_high) / 2;
+    const incVar = ex.selling + 0.5 * ex.handling;
+    return [{
+      capacity: v.seats * v.round_trips * v.operating_days,
+      inc_var_cost: r2(incVar),
+      inc_seat_cost: r2((v.inc_cost - incVar) * incLf),
+      spare_low: Math.round(v.air_pax / v.inc_lf_high - v.air_pax),
+      spare_high: Math.round(v.air_pax / v.inc_lf_low - v.air_pax),
+      route_revenue_m: r2(v.air_pax * v.inc_avg_rev / 1e6),
+      route_profit_m: r2(v.air_pax * v.inc_profit / 1e6),
+    }];
+  },
+});
+
+dash.calc('scenarios', {
+  inputs: ['case_inputs', 'exhibit4'],
+  title: 'Ryanair scenarios',
+  description: 'Operating result, break-even and runway for each seat-cost advantage (0–50%), load factor (40–95%) and realised fare (I£70–120).',
+  fn: (case_inputs, exhibit4) => {
+    const v = Object.fromEntries(case_inputs.map((r) => [r.key, Number(r.value)]));
+    const ex = Object.fromEntries(exhibit4.map((r) => [r.line, Number(r.value)]));
+    const r1 = (x) => Math.round(x * 10) / 10;
+    const r2 = (x) => Math.round(x * 100) / 100;
+    const cap = v.seats * v.round_trips * v.operating_days;
+    const incLf = (v.inc_lf_low + v.inc_lf_high) / 2;
+    const incSeat = (v.inc_cost - (ex.selling + 0.5 * ex.handling)) * incLf;
+    const sellPct = ex.selling / v.inc_avg_rev;
+    const rows = [];
+    for (let adv = 0; adv <= 50; adv += 5) {
+      for (let lf = 40; lf <= 95; lf += 5) {
+        for (let fare = 70; fare <= 120; fare += 2) {
+          const contrib = fare - (fare * sellPct + 0.5 * ex.handling);
+          const seat = incSeat * (1 - adv / 100);
+          const fixed = seat * cap;
+          const bePax = fixed / contrib;
+          const pax = cap * lf / 100;
+          const profit = pax * contrib - fixed;
+          rows.push({
+            cost_adv: adv, lf, fare,
+            contribution: r1(contrib),
+            seat_cost: r1(seat),
+            be_lf: r1(bePax / cap * 100),
+            pax: Math.round(pax),
+            profit_m: r2(profit / 1e6),
+            margin_safety: r1((pax - bePax) / pax * 100),
+            runway_months: profit < 0 ? r1(v.capital / -profit * 12) : null,
+          });
+        }
+      }
+    }
+    return rows;
+  },
+});
+
+dash.calc('retaliation', {
+  inputs: ['case_inputs'],
+  title: 'Cost of fare matching',
+  description: 'Annual revenue the incumbents give up matching Ryanair on every ticket, or only on advance-purchase fares with some full-fare travellers trading down.',
+  fn: (case_inputs) => {
+    const v = Object.fromEntries(case_inputs.map((r) => [r.key, Number(r.value)]));
+    const r2 = (x) => Math.round(x * 100) / 100;
+    const fullShare = (v.inc_avg_rev - v.inc_advance) / (v.inc_unrestricted - v.inc_advance);
+    const full = v.air_pax * fullShare;
+    const disc = v.air_pax - full;
+    const rows = [];
+    for (let fare = 70; fare <= 120; fare += 2) {
+      for (let leak = 0; leak <= 30; leak += 1) {
+        rows.push({
+          fare, leak,
+          broad_m: r2(Math.max(0, v.inc_avg_rev - fare) * v.air_pax / 1e6),
+          selective_m: r2((Math.max(0, v.inc_advance - fare) * disc + leak / 100 * full * Math.max(0, v.inc_unrestricted - fare)) / 1e6),
+        });
+      }
+    }
+    return rows;
+  },
+});
+
+dash.calc('accommodation', {
+  inputs: ['case_inputs', 'exhibit4'],
+  title: 'Cost of accommodating Ryanair',
+  description: 'Contribution the incumbents lose on passengers Ryanair takes, valued at the advance fare (low) and the average fare (high).',
+  fn: (case_inputs, exhibit4) => {
+    const v = Object.fromEntries(case_inputs.map((r) => [r.key, Number(r.value)]));
+    const ex = Object.fromEntries(exhibit4.map((r) => [r.line, Number(r.value)]));
+    const r2 = (x) => Math.round(x * 100) / 100;
+    const cap = v.seats * v.round_trips * v.operating_days;
+    const sellPct = ex.selling / v.inc_avg_rev;
+    const lowUnit = v.inc_advance - (v.inc_advance * sellPct + 0.5 * ex.handling);
+    const highUnit = v.inc_avg_rev - (ex.selling + 0.5 * ex.handling);
+    const rows = [];
+    for (let lf = 40; lf <= 95; lf += 5) {
+      for (let share = 0; share <= 100; share += 10) {
+        const d = cap * lf / 100 * share / 100;
+        rows.push({ lf, share, diverted: Math.round(d), low_m: r2(d * lowUnit / 1e6), high_m: r2(d * highUnit / 1e6) });
+      }
+    }
+    return rows;
+  },
+});
+
+const ryCtl = [
+  { id: 'ry-cost', key: 'cost_adv', fmt: (x) => x + '%' },
+  { id: 'ry-lf', key: 'lf', fmt: (x) => x + '%' },
+  { id: 'ry-fare', key: 'fare', fmt: (x) => 'I£' + x },
+  { id: 'ry-leak', key: 'leak', fmt: (x) => x + '%' },
+  { id: 'ry-div', key: 'diverted', fmt: (x) => x + '%' },
+];
+const ryDefaults = { cost_adv: 30, lf: 70, fare: 98, leak: 10, diverted: 50 };
+ryCtl.forEach((c) => {
+  const el = document.getElementById(c.id);
+  el.addEventListener('input', () => {
+    document.getElementById(c.id + '-out').textContent = c.fmt(Number(el.value));
+    dash.setParams({ [c.key]: Number(el.value) });
+  });
+});
+document.querySelector('.ry-reset').addEventListener('click', () => dash.resetParams());
+
+const ryFmt = {
+  profit_m: d3.format('+.2f'), be_lf: d3.format('.1f'), margin_safety: d3.format('+.1f'),
+  contribution: d3.format('.1f'), seat_cost: d3.format('.1f'), runway_months: d3.format('.0f'),
+};
+const ryNum = d3.format(',');
+const ry2 = d3.format('.2f');
+
+function ryParams() {
+  const p = dash.params();
+  const out = {};
+  Object.keys(ryDefaults).forEach((k) => { out[k] = p[k] == null ? ryDefaults[k] : Number(p[k]); });
+  return out;
+}
+
+function ryLine(rows, cur, beLf) {
+  const box = document.getElementById('ry-line');
+  box.replaceChildren();
+  if (!rows.length) return;
+  const W = Math.max(280, box.clientWidth || 560);
+  const H = 270;
+  const svg = d3.select(box).append('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`).attr('height', H);
+  const vals = rows.map((r) => r.profit_m).concat([0]);
+  const y = d3.scaleLinear(d3.extent(vals), [H - 32, 14]).nice();
+  const fy = d3.format('.1f');
+  const tmp = svg.append('text').style('font-size', 'var(--cds-font-size-caption)');
+  let mw = 0;
+  y.ticks(5).forEach((t) => { tmp.text(fy(t)); mw = Math.max(mw, tmp.node().getComputedTextLength()); });
+  tmp.remove();
+  const ml = mw + 12, mr = 16;
+  const x = d3.scaleLinear([40, 95], [ml, W - mr]);
+  const g = svg.append('g');
+  y.ticks(5).forEach((t) => {
+    g.append('line').attr('x1', ml).attr('x2', W - mr).attr('y1', y(t)).attr('y2', y(t)).attr('stroke', 'var(--cds-chart-grid)');
+    g.append('text').attr('x', ml - 6).attr('y', y(t)).attr('dy', '0.32em').attr('text-anchor', 'end').attr('fill', 'var(--color-fg-muted)').style('font-size', 'var(--cds-font-size-caption)').text(fy(t));
+  });
+  [40, 50, 60, 70, 80, 90].forEach((t) => {
+    g.append('text').attr('x', x(t)).attr('y', H - 10).attr('text-anchor', 'middle').attr('fill', 'var(--color-fg-muted)').style('font-size', 'var(--cds-font-size-caption)').text(t + '%');
+  });
+  g.append('line').attr('x1', ml).attr('x2', W - mr).attr('y1', y(0)).attr('y2', y(0)).attr('stroke', 'var(--cds-chart-axis)');
+  if (beLf != null && beLf >= 40 && beLf <= 95) {
+    g.append('line').attr('x1', x(beLf)).attr('x2', x(beLf)).attr('y1', 14).attr('y2', H - 32).attr('stroke', 'var(--cds-chart-reference)').attr('stroke-dasharray', '4 4');
+    const right = x(beLf) > (ml + W - mr) / 2;
+    g.append('text').attr('x', x(beLf) + (right ? -6 : 6)).attr('y', 24).attr('text-anchor', right ? 'end' : 'start').attr('fill', 'var(--color-fg-muted)').style('font-size', 'var(--cds-font-size-caption)').text('Break-even ' + d3.format('.0f')(beLf) + '%');
+  }
+  const line = d3.line().x((r) => x(r.lf)).y((r) => y(r.profit_m));
+  g.append('path').datum(rows).attr('d', line).attr('fill', 'none').attr('stroke', dash.colors[0]).attr('stroke-width', 2).attr('stroke-linecap', 'round').attr('stroke-linejoin', 'round');
+  const c = rows.find((r) => r.lf === cur);
+  if (c) g.append('circle').attr('cx', x(c.lf)).attr('cy', y(c.profit_m)).attr('r', 5).attr('fill', dash.colors[0]);
+  const tip = document.createElement('div');
+  tip.className = 'ry-tip';
+  tip.hidden = true;
+  box.appendChild(tip);
+  const hover = g.append('circle').attr('r', 4).attr('fill', dash.colors[0]).attr('opacity', 0);
+  svg.append('rect').attr('x', ml).attr('y', 0).attr('width', W - ml - mr).attr('height', H).attr('fill', 'transparent')
+    .on('mousemove', (event) => {
+      const [mx] = d3.pointer(event);
+      const lfv = x.invert(mx);
+      const r = rows.reduce((a, b) => (Math.abs(b.lf - lfv) < Math.abs(a.lf - lfv) ? b : a));
+      hover.attr('cx', x(r.lf)).attr('cy', y(r.profit_m)).attr('opacity', 1);
+      tip.replaceChildren();
+      const h = document.createElement('div'); h.className = 'ry-tip-head'; h.textContent = r.lf + '% load factor';
+      const b = document.createElement('div'); b.textContent = 'I£' + d3.format('+.2f')(r.profit_m) + 'm a year';
+      tip.append(h, b);
+      tip.hidden = false;
+      const px = (x(r.lf) / W) * box.clientWidth;
+      const tw = tip.offsetWidth;
+      tip.style.left = Math.min(Math.max(0, px - tw / 2), box.clientWidth - tw) + 'px';
+      tip.style.top = Math.max(0, (y(r.profit_m) / H) * H - 52) + 'px';
+    })
+    .on('mouseleave', () => { tip.hidden = true; hover.attr('opacity', 0); });
+}
+
+function ryHeat(rows, cur) {
+  const box = document.getElementById('ry-heat');
+  box.replaceChildren();
+  if (!rows.length) return;
+  const lfs = [40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95];
+  const maxAbs = d3.max(rows, (r) => Math.abs(r.profit_m)) || 1;
+  const head = document.createElement('div'); head.className = 'ry-heat-head'; head.textContent = 'Seat cost ↓ · load →';
+  box.appendChild(head);
+  lfs.forEach((l) => { const h = document.createElement('div'); h.className = 'ry-heat-head'; h.textContent = l + '%'; box.appendChild(h); });
+  for (let adv = 0; adv <= 50; adv += 5) {
+    const lab = document.createElement('div'); lab.className = 'ry-heat-row'; lab.textContent = adv === 0 ? 'Same' : adv + '% lower';
+    box.appendChild(lab);
+    lfs.forEach((l) => {
+      const r = rows.find((d) => d.cost_adv === adv && d.lf === l);
+      const cell = document.createElement('div');
+      cell.className = 'ry-heat-cell';
+      if (r) {
+        const share = Math.round(12 + 58 * Math.abs(r.profit_m) / maxAbs);
+        const col = r.profit_m < 0 ? 'var(--color-bad)' : dash.colors[0];
+        cell.style.background = `color-mix(in srgb, ${col} ${share}%, transparent)`;
+        cell.textContent = d3.format('+.1f')(r.profit_m);
+        if (adv === cur.cost_adv && l === cur.lf) cell.classList.add('ry-heat-cur');
+      }
+      box.appendChild(cell);
+    });
+  }
+}
+
+function ryBars(container, specs) {
+  const max = d3.max(specs, (s) => s.hi) || 1;
+  specs.forEach((s) => {
+    const bar = container.querySelector(`[data-k="${s.k}"]`);
+    if (!bar) return;
+    bar.style.left = (100 * (s.lo || 0) / max) + '%';
+    bar.style.width = (100 * Math.max(0, s.hi - (s.lo || 0)) / max) + '%';
+    bar.style.background = s.color;
+  });
+}
+
+function ryTable(id, data, keyCol, cols) {
+  const body = document.querySelector(`#${id} tbody`);
+  body.replaceChildren();
+  data.forEach((r) => {
+    const tr = document.createElement('tr');
+    tr.dataset.key = r[keyCol];
+    cols.forEach((c) => {
+      const td = document.createElement('td');
+      td.textContent = c.fmt ? c.fmt(r[c.f]) : r[c.f];
+      if (c.num) td.className = 'ry-num';
+      tr.appendChild(td);
+    });
+    body.appendChild(tr);
+  });
+}
+
+dash.onData(() => {
+  const p = ryParams();
+  ryCtl.forEach((c) => {
+    const el = document.getElementById(c.id);
+    if (document.activeElement !== el) el.value = p[c.key];
+    document.getElementById(c.id + '-out').textContent = c.fmt(p[c.key]);
+  });
+  document.querySelector('.ry-p-cost').textContent = p.cost_adv + '%';
+  document.querySelector('.ry-p-lf').textContent = p.lf + '%';
+  document.querySelector('.ry-p-fare').textContent = 'I£' + p.fare;
+
+  const S = dash.data('scenarios');
+  const R = dash.data('route_economics');
+  const T = dash.data('retaliation');
+  const A = dash.data('accommodation');
+  const C = dash.data('case_inputs');
+  const E = dash.data('exhibit4');
+
+  const sOk = S.status === 'ok';
+  const row = sOk ? S.data.find((r) => r.cost_adv === p.cost_adv && r.lf === p.lf && r.fare === p.fare) : null;
+  document.querySelectorAll('.ry-scn').forEach((el) => {
+    el.setAttribute('data-where', `cost_adv=${p.cost_adv}&lf=${p.lf}&fare=${p.fare}`);
+    const f = el.dataset.field;
+    const val = row ? row[f] : null;
+    el.textContent = val == null ? '—' : ryFmt[f](val);
+    el.classList.toggle('dash-skeleton', S.status === 'loading');
+  });
+  document.querySelectorAll('.ry-profit').forEach((el) => {
+    const big = el.closest('.ry-big');
+    big.classList.toggle('ry-pos', !!row && row.profit_m >= 0);
+    big.classList.toggle('ry-neg', !!row && row.profit_m < 0);
+  });
+  const noBurn = row && row.runway_months == null;
+  document.querySelector('.ry-runway-unit').hidden = !!noBurn;
+  document.querySelector('.ry-runway-note').textContent = noBurn ? 'No cash burn: the route makes money' : 'At this year’s operating loss';
+
+  const lineRows = sOk ? S.data.filter((r) => r.cost_adv === p.cost_adv && r.fare === p.fare).sort((a, b) => a.lf - b.lf) : [];
+  if (S.status === 'error') { document.getElementById('ry-line').textContent = 'Failed to load'; } else { ryLine(lineRows, p.lf, row ? row.be_lf : null); }
+  const heatRows = sOk ? S.data.filter((r) => r.fare === p.fare) : [];
+  ryHeat(heatRows, p);
+
+  const rRow = R.status === 'ok' ? R.data[0] : null;
+  document.querySelectorAll('[data-source="route_economics"]').forEach((el) => {
+    if (el.id) return;
+    const f = el.dataset.field;
+    const val = rRow ? rRow[f] : null;
+    el.textContent = val == null ? '—' : (f.endsWith('_m') ? ry2(val) : (f === 'inc_seat_cost' ? d3.format('.1f')(val) : ryNum(val)));
+    el.classList.toggle('dash-skeleton', R.status === 'loading');
+  });
+
+  const tRow = T.status === 'ok' ? T.data.find((r) => r.fare === p.fare && r.leak === p.leak) : null;
+  document.querySelectorAll('.ry-ret').forEach((el) => {
+    el.setAttribute('data-where', `fare=${p.fare}&leak=${p.leak}`);
+    const val = tRow ? tRow[el.dataset.field] : null;
+    el.textContent = val == null ? '—' : ry2(val);
+    el.classList.toggle('dash-skeleton', T.status === 'loading');
+  });
+  const aRow = A.status === 'ok' ? A.data.find((r) => r.lf === p.lf && r.share === p.diverted) : null;
+  document.querySelectorAll('.ry-acc').forEach((el) => {
+    el.setAttribute('data-where', `lf=${p.lf}&share=${p.diverted}`);
+    const val = aRow ? aRow[el.dataset.field] : null;
+    el.textContent = val == null ? '—' : ry2(val);
+  });
+  if (tRow && aRow && rRow) {
+    ryBars(document.getElementById('ry-ret-bars'), [
+      { k: 'broad', hi: tRow.broad_m, color: 'var(--color-bad)' },
+      { k: 'selective', hi: tRow.selective_m, color: dash.colors[0] },
+      { k: 'acc', lo: aRow.low_m, hi: aRow.high_m, color: 'var(--cds-chart-muted)' },
+      { k: 'profit', hi: rRow.route_profit_m, color: 'var(--color-fg-muted)' },
+    ]);
+    const cheaper = tRow.selective_m < aRow.low_m ? 'Matching only advance-purchase fares is cheaper than accommodating Ryanair, so expect selective retaliation.'
+      : tRow.selective_m > aRow.high_m ? 'Fare-fence leakage now makes selective matching dearer than accommodating Ryanair, so tolerating the entrant becomes rational.'
+      : 'Selective matching and accommodation cost about the same here, so the incumbents’ choice turns on reputation and future entrants.';
+    document.querySelector('.ry-ret-verdict').textContent = cheaper;
+  }
+
+  const cRows = C.status === 'ok' ? C.data : [];
+  const cv = Object.fromEntries(cRows.map((r) => [r.key, Number(r.value)]));
+  document.querySelectorAll('[data-source="case_inputs"][data-field="value"]').forEach((el) => {
+    const k = (el.getAttribute('data-where') || '').split('=')[1];
+    el.textContent = cv[k] == null ? '—' : ryNum(cv[k]);
+  });
+  if (rRow && cRows.length) {
+    ryBars(document.getElementById('ry-seat-bars'), [
+      { k: 'surface', hi: cv.surface_pax, color: 'var(--cds-chart-muted)' },
+      { k: 'air', hi: cv.air_pax, color: 'var(--color-fg-muted)' },
+      { k: 'spare', lo: 0, hi: rRow.spare_high, color: 'var(--cds-chart-muted)' },
+      { k: 'cap', hi: rRow.capacity, color: dash.colors[0] },
+    ]);
+  }
+  ryTable('ry-facts', cRows, 'key', [{ f: 'item' }, { f: 'value', num: true, fmt: (x) => ryNum(Number(x)) }, { f: 'unit' }, { f: 'source' }]);
+  ryTable('ry-costs', E.status === 'ok' ? E.data : [], 'line', [{ f: 'label' }, { f: 'value', num: true, fmt: (x) => d3.format('.1f')(Number(x)) }, { f: 'classification' }]);
+});
+</script>
+</body>
+</html>
