@@ -674,10 +674,9 @@ dash.onData(() => {
   ];
   let i = 0, running = false, paused = false, timer = null, token = 0, spot = null;
   const set = (o) => dash.setParams(o);
-  const pause = (ms) => new Promise((r) => setTimeout(r, reduce ? 0 : ms));
+  const pause = (ms) => new Promise((r) => setTimeout(r, ms));
   async function sweep(key, from, to, step, ms) {
     const my = token;
-    if (reduce) { set({ [key]: to }); return; }
     for (let v = from; v <= to; v += step) {
       if (my !== token) return;
       set({ [key]: v });
@@ -699,7 +698,7 @@ dash.onData(() => {
   function progress(ms) {
     const bar = $('ry-tour-progress');
     bar.style.transition = 'none'; bar.style.width = '0%'; void bar.offsetWidth;
-    if (!paused && !reduce) { bar.style.transition = `width ${ms}ms linear`; bar.style.width = '100%'; }
+    if (!paused) { bar.style.transition = `width ${ms}ms linear`; bar.style.width = '100%'; }
   }
   async function show(n) {
     clearTimeout(timer);
