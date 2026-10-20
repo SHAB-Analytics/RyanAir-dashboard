@@ -691,22 +691,39 @@ dash.onData(() => {
     .replace(/I£(\d+(?:\.\d+)?) million/g, '$1 million Irish pounds')
     .replace(/I£(\d+(?:\.\d+)?)/g, '$1 Irish pounds')
     .replace(/[“”]/g, '');
+  let live = [];
+  function hush() {
+    if (!synth) return;
+    live = [];
+    if (synth.speaking || synth.pending) synth.cancel();
+  }
   function speak(text, maxMs) {
     return new Promise((resolve) => {
       if (!voiceOn || !synth) return resolve();
-      synth.cancel();
-      const u = new SpeechSynthesisUtterance(text);
-      if (voice) { u.voice = voice; u.lang = voice.lang; } else u.lang = 'en-GB';
-      u.rate = 0.97; u.pitch = 1;
+      hush();
+      if (!voice) pickVoice();
+      // Chrome stops long utterances after ~15 s, so speak one sentence at a time.
+      const parts = text.match(/[^.!?]+[.!?]*/g) || [text];
+      const mine = [];
+      live = mine;
       let done = false;
       const fin = () => { if (!done) { done = true; clearTimeout(guard); resolve(); } };
       const guard = setTimeout(fin, maxMs);
-      u.onend = fin;
-      u.onerror = (e) => {
-        if (e && e.error === 'not-allowed') { needTap = true; voiceBtn.textContent = '🔊 Tap for sound'; voiceBtn.classList.add('ry-tap'); }
-        fin();
-      };
-      synth.speak(u);
+      parts.forEach((t, k) => {
+        const u = new SpeechSynthesisUtterance(t.trim());
+        if (voice) { u.voice = voice; u.lang = voice.lang; } else u.lang = 'en-GB';
+        u.rate = 0.97; u.pitch = 1; u.volume = 1;
+        if (k === parts.length - 1) u.onend = fin;
+        u.onerror = (e) => {
+          if (e && e.error === 'not-allowed') { needTap = true; voiceBtn.textContent = '🔊 Tap for sound'; voiceBtn.classList.add('ry-tap'); }
+          if (e && (e.error === 'interrupted' || e.error === 'canceled')) return;
+          fin();
+        };
+        mine.push(u); // keep a reference so the browser does not drop it mid-sentence
+      });
+      if (synth.paused) synth.resume();
+      // A short delay after cancel() avoids a Chrome bug where the next speak() is silently ignored.
+      setTimeout(() => { if (live === mine) mine.forEach((u) => synth.speak(u)); }, 60);
     });
   }
   const voiceBtn = $('ry-tour-voice');
@@ -716,7 +733,7 @@ dash.onData(() => {
     voiceOn = !voiceOn;
     voiceBtn.textContent = voiceOn ? '🔊 Voice on' : '🔇 Voice off';
     voiceBtn.setAttribute('aria-pressed', String(voiceOn));
-    if (!voiceOn && synth) synth.cancel();
+    if (!voiceOn) hush();
     if (running && !paused) show(i);
   });
   const set = (o) => dash.setParams(o);
@@ -771,6 +788,7 @@ dash.onData(() => {
     timer = setTimeout(() => (i < steps.length - 1 ? show(i + 1) : end()), st.play && !voiceOn ? 2500 : 700);
   }
   function start() {
+    if (synth && voiceOn) { try { const w = new SpeechSynthesisUtterance(' '); w.volume = 0; synth.speak(w); } catch (e) {} }
     dash.resetParams();
     running = true; paused = false;
     $('ry-tour-pause').textContent = 'Pause';
@@ -780,7 +798,7 @@ dash.onData(() => {
   }
   function end() {
     token++; clearTimeout(timer); running = false;
-    if (synth) synth.cancel();
+    hush();
     if (spot) spot.classList.remove('ry-spot');
     spot = null;
     $('ry-tour').hidden = true;
@@ -794,7 +812,7 @@ dash.onData(() => {
   $('ry-tour-pause').addEventListener('click', () => {
     paused = !paused;
     $('ry-tour-pause').textContent = paused ? 'Play' : 'Pause';
-    if (paused) { token++; clearTimeout(timer); progress(0); if (synth) synth.cancel(); } else show(i);
+    if (paused) { token++; clearTimeout(timer); progress(0); hush(); } else show(i);
   });
   document.addEventListener('keydown', (e) => {
     if (!running) return;
