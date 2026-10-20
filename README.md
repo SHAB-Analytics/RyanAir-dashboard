@@ -1,6 +1,6 @@
 <p align="center"><img src="banner.svg" alt="Ryanair (A) interactive dashboard" width="100%"></p>
 
-<p align="center"><b><a href="https://shab-analytics.github.io/ryanair-dashboard/">▶ Open the live dashboard</a></b></p>
+<p align="center"><b><a href="https://shab-analytics.github.io/RyanAir-dashboard/">▶ Open the live dashboard</a></b></p>
 
 *In April 1986 a small Irish airline announced it would fly Dublin–London for I£98, less than half the flag carriers' cheapest unrestricted fare. Could it make money, and what would it cost Aer Lingus and British Airways to fight back? This dashboard lets you test the answer yourself.*
 
