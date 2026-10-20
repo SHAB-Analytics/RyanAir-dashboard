@@ -7,23 +7,22 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;600;700&family=Source+Serif+4:wght@400;600&display=swap">
 <style>
-:root{
- --color-bg:#F6F7F9;--color-panel:#FFFFFF;--color-fg:#1A2233;--color-fg-muted:#5B6576;--color-border-line:#DDE2EA;
- --color-ok:#1B7F4B;--color-bad:#C2410C;--cds-chart-grid:#E6EAF0;--cds-chart-axis:#9AA4B2;--cds-chart-reference:#6B7685;--cds-chart-muted:#B9C3D1;
- --cds-surface-popover:#FFFFFF;--cds-border:#DDE2EA;--cds-shadow-popover:0 4px 16px rgba(20,30,50,.12);--cds-text-secondary:#5B6576;
- --ry-accent:#2457D6;
+:root{color-scheme:light;--color-warn:#9A6B0E;
+ --color-bg:#F7F5EF;--color-panel:#FFFFFC;--color-fg:#1F2A37;--color-fg-muted:#5B6573;--color-border-line:#DCDFD8;
+ --color-ok:#2F7D4F;--color-bad:#B03A2E;--cds-chart-grid:#E6E8E3;--cds-chart-axis:#B9BFC6;--cds-chart-reference:#7A838C;--cds-chart-muted:#9AA3AD;
+ --cds-surface-popover:#FFFFFF;--cds-border:#DCDFD8;--cds-shadow-popover:0 4px 16px rgba(20,30,50,.12);--cds-text-secondary:#5B6573;
+ --ry-accent:#B4581A;
  --font-anthropic-sans:'Public Sans',system-ui,-apple-system,'Segoe UI',Arial,sans-serif;--font-anthropic-serif:'Source Serif 4',Georgia,'Times New Roman',serif;
  --cds-gap-xs:4px;--cds-gap-sm:8px;--cds-gap-md:16px;--cds-gap-lg:28px;--cds-pad-xs:4px;--cds-pad-sm:8px;--cds-pad-md:16px;--cds-pad-lg:20px;
- --cds-radius:8px;--cds-font-size-caption:13px;--cds-font-size-body:15px;--cds-font-size-heading:17px;--cds-font-size-title:32px;--cds-font-weight-medium:600;--cds-dur-slow:.3s;
+ --cds-radius:10px;--cds-font-size-caption:13px;--cds-font-size-body:15px;--cds-font-size-heading:17px;--cds-font-size-title:32px;--cds-font-weight-medium:600;--cds-dur-slow:.3s;
 }
-@media (prefers-color-scheme: dark){:root{
- --color-bg:#0F1522;--color-panel:#172031;--color-fg:#E7ECF4;--color-fg-muted:#A3AEC0;--color-border-line:#2A3549;
- --color-ok:#4ADE80;--color-bad:#FB923C;--cds-chart-grid:#243046;--cds-chart-axis:#55627A;--cds-chart-reference:#8A96AA;--cds-chart-muted:#4A5873;
- --cds-surface-popover:#1E293C;--cds-border:#2A3549;--cds-shadow-popover:0 4px 16px rgba(0,0,0,.4);--cds-text-secondary:#A3AEC0;--ry-accent:#6E97FF;color-scheme:dark}}
+
 html,body{margin:0;background:var(--color-bg);color:var(--color-fg)}
 .ry-page{max-width:1200px;margin-inline:auto;padding-block:32px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
 .dash-skeleton{color:transparent;background:var(--color-border-line);border-radius:4px}
 .ry-foot-credit{margin-top:24px}
+
+
 
 .ry{display:flex;flex-direction:column;gap:var(--cds-gap-lg);font-family:var(--font-anthropic-sans);color:var(--color-fg)}
 .ry-title{margin:0;font-family:var(--font-anthropic-serif);font-weight:400;font-size:var(--cds-font-size-title);text-wrap:balance}
@@ -72,15 +71,44 @@ html,body{margin:0;background:var(--color-bg);color:var(--color-fg)}
 .ry-table .ry-num{text-align:right}
 .ry [data-dash-source-state=empty]{color:transparent}
 .ry [data-dash-source-state=refreshing]{opacity:.5;transition:opacity var(--cds-dur-slow)}
+
+.ry-strip{height:6px;border-radius:3px;background:linear-gradient(90deg,#2E4A6B 0 16.6%,#B4581A 16.6% 33.3%,#3C8D93 33.3% 50%,#7A5C99 50% 66.6%,#6B7F2A 66.6% 83.3%,#A33B5C 83.3% 100%)}
+.ry-ribbon{align-self:flex-start;border:1px dashed var(--color-warn);color:var(--color-warn);border-radius:var(--cds-radius);padding:var(--cds-pad-xs) var(--cds-pad-md);font-size:var(--cds-font-size-caption);font-weight:600}
+.ry-section{display:flex;align-items:center;gap:10px}
+.ry-section::before{content:"";width:10px;height:10px;border-radius:3px;background:var(--ry-dot,#2E4A6B)}
+#ryanair{--ry-dot:#B4581A}#incumbents{--ry-dot:#2E4A6B}#case-data{--ry-dot:#6B7F2A}
+.ry-ctl input{accent-color:#B4581A}
+.ry-tile{border-top:4px solid var(--ry-tc,#2E4A6B)}
+.ry-tiles .ry-tile:nth-child(1){--ry-tc:#B4581A}.ry-tiles .ry-tile:nth-child(2){--ry-tc:#2E4A6B}.ry-tiles .ry-tile:nth-child(3){--ry-tc:#3C8D93}
+.ry-tiles .ry-tile:nth-child(4){--ry-tc:#7A5C99}.ry-tiles .ry-tile:nth-child(5){--ry-tc:#6B7F2A}.ry-tiles .ry-tile:nth-child(6){--ry-tc:#A33B5C}
+.ry-pill{align-self:flex-start;font-size:var(--cds-font-size-caption);font-weight:600;border:1px solid currentColor;border-radius:999px;padding:0 var(--cds-pad-sm)}
+.ry-pill:empty{display:none}
+.ry-ok{color:var(--color-ok)}.ry-warn{color:var(--color-warn)}.ry-bad{color:var(--color-bad)}
+.ry-card.ry-gate{display:flex;flex-direction:row;justify-content:flex-start;flex-wrap:wrap;gap:var(--cds-gap-lg);align-items:center;border-left:6px solid var(--ry-gc,#9A6B0E)}
+.ry-gate-main{display:flex;flex-direction:column;gap:var(--cds-gap-xs);min-width:12rem}
+.ry-gate-label{font-size:var(--cds-font-size-caption);color:var(--color-fg-muted);text-transform:uppercase;letter-spacing:.08em;font-weight:600}
+.ry-gate-big{font-family:var(--font-anthropic-serif);font-size:2.6rem;line-height:1.05}
+.ry-checks{display:flex;flex-direction:column;gap:6px;font-size:var(--cds-font-size-body);flex:1;min-width:16rem}
+.ry-check{display:flex;gap:10px;align-items:baseline}
+.ry-check b{min-width:2.4rem;font-size:var(--cds-font-size-caption)}
+.ry-card.ry-gate{align-items:center;text-align:left}
 </style>
 </head>
 <body>
 <main class="ry-page">
 <div class="ry">
+  <div class="ry-strip"></div>
+  <span class="ry-ribbon">Scenario model · Figures are scenarios built on case data, not forecasts</span>
   <header id="overview">
     <h1 class="ry-title">Ryanair (A) scenario dashboard</h1>
     <p class="ry-take">At a <b class="ry-p-cost">—</b> seat-cost advantage, a <b class="ry-p-lf">—</b> load factor and a <b class="ry-p-fare">—</b> fare, Ryanair’s annual operating result is I£<b class="ry-scn dash-skeleton" data-source="scenarios" data-field="profit_m">—</b>m, and it breaks even at <b class="ry-scn dash-skeleton" data-source="scenarios" data-field="be_lf">—</b>% load. Matching I£98 on every ticket would cost the incumbents I£<b class="ry-ret dash-skeleton" data-source="retaliation" data-field="broad_m">—</b>m a year against a route profit of I£<b class="dash-skeleton" data-source="route_economics" data-field="route_profit_m">—</b>m.</p>
   </header>
+
+
+  <section id="verdict" class="ry-card ry-gate">
+    <div class="ry-gate-main"><span class="ry-gate-label">Launch verdict at this scenario</span><span class="ry-gate-big" id="ry-gate-word">—</span><span class="ry-pill" id="ry-gate-pill"></span></div>
+    <div class="ry-checks" id="ry-checks"></div>
+  </section>
 
   <section id="controls" class="ry-card">
     <h3>Scenario</h3>
@@ -96,12 +124,12 @@ html,body{margin:0;background:var(--color-bg);color:var(--color-fg)}
 
   <h2 id="ryanair" class="ry-section">Ryanair at this scenario</h2>
   <div class="ry-tiles">
-    <div class="ry-tile"><span class="ry-tile-label">Annual operating result</span><span class="ry-big"><span>I£</span><span class="ry-scn ry-profit dash-skeleton" data-source="scenarios" data-field="profit_m">—</span><span>m</span></span><span class="ry-note">Contribution minus flight costs</span></div>
-    <div class="ry-tile"><span class="ry-tile-label">Break-even load factor</span><span class="ry-big"><span class="ry-scn dash-skeleton" data-source="scenarios" data-field="be_lf">—</span><span>%</span></span><span class="ry-note">Over 100% means impossible</span></div>
+    <div class="ry-tile"><span class="ry-tile-label">Annual operating result</span><span class="ry-big"><span>I£</span><span class="ry-scn ry-profit dash-skeleton" data-source="scenarios" data-field="profit_m">—</span><span>m</span></span><span class="ry-pill" id="ry-pill-profit"></span><span class="ry-note">Contribution minus flight costs</span></div>
+    <div class="ry-tile"><span class="ry-tile-label">Break-even load factor</span><span class="ry-big"><span class="ry-scn dash-skeleton" data-source="scenarios" data-field="be_lf">—</span><span>%</span></span><span class="ry-pill" id="ry-pill-be"></span><span class="ry-note">Over 100% means impossible</span></div>
     <div class="ry-tile"><span class="ry-tile-label">Margin of safety</span><span class="ry-big"><span class="ry-scn dash-skeleton" data-source="scenarios" data-field="margin_safety">—</span><span>%</span></span><span class="ry-note">Passengers above break-even</span></div>
     <div class="ry-tile"><span class="ry-tile-label">Contribution per passenger</span><span class="ry-big"><span>I£</span><span class="ry-scn dash-skeleton" data-source="scenarios" data-field="contribution">—</span></span><span class="ry-note">Fare minus selling, catering, handling</span></div>
     <div class="ry-tile"><span class="ry-tile-label">Flight cost per seat</span><span class="ry-big"><span>I£</span><span class="ry-scn dash-skeleton" data-source="scenarios" data-field="seat_cost">—</span></span><span class="ry-note">Incumbent level is I£<span data-source="route_economics" data-field="inc_seat_cost">—</span></span></div>
-    <div class="ry-tile"><span class="ry-tile-label">Cash runway on I£1m</span><span class="ry-big"><span class="ry-scn dash-skeleton" data-source="scenarios" data-field="runway_months">—</span><span class="ry-runway-unit"> months</span></span><span class="ry-note ry-runway-note">At this year’s loss</span></div>
+    <div class="ry-tile"><span class="ry-tile-label">Cash runway on I£1m</span><span class="ry-big"><span class="ry-scn dash-skeleton" data-source="scenarios" data-field="runway_months">—</span><span class="ry-runway-unit"> months</span></span><span class="ry-pill" id="ry-pill-run"></span><span class="ry-note ry-runway-note">At this year’s loss</span></div>
   </div>
 
   <div class="ry-grid">
@@ -112,7 +140,7 @@ html,body{margin:0;background:var(--color-bg);color:var(--color-fg)}
     </section>
     <section id="heatmap" class="ry-card">
       <h3>Operating result by seat cost and load factor</h3>
-      <p class="ry-note">I£ million a year at the chosen fare. Red cells are losses, blue cells are profits; the outlined cell is the scenario.</p>
+      <p class="ry-note">I£ million a year at the chosen fare. Red cells are losses, green cells are profits; the outlined cell is the scenario.</p>
       <div class="ry-heat-wrap"><div class="ry-heat" id="ry-heat" data-source="scenarios"></div></div>
     </section>
   </div>
@@ -197,7 +225,7 @@ window.dash = (() => {
   const accent = getComputedStyle(document.documentElement).getPropertyValue('--ry-accent').trim() || '#2457D6';
   window.addEventListener('resize', run);
   return {
-    colors: [accent],
+    colors: ['#B4581A', '#2E4A6B', '#3C8D93', '#7A5C99', '#6B7F2A', '#A33B5C', '#8C6D3E', '#1E5B4C'],
     calc(id, spec) { calcs[id] = spec.fn(...spec.inputs.map((i) => RY_DATA[i] || calcs[i])); },
     data(id) { const d = RY_DATA[id] || calcs[id]; return { status: d ? 'ok' : 'missing', data: d || [] }; },
     onData(fn) { subs.push(fn); fn(); },
@@ -378,6 +406,7 @@ function ryLine(rows, cur, beLf) {
     const right = x(beLf) > (ml + W - mr) / 2;
     g.append('text').attr('x', x(beLf) + (right ? -6 : 6)).attr('y', 24).attr('text-anchor', right ? 'end' : 'start').attr('fill', 'var(--color-fg-muted)').style('font-size', 'var(--cds-font-size-caption)').text('Break-even ' + d3.format('.0f')(beLf) + '%');
   }
+  g.append('path').datum(rows).attr('d', d3.area().x((r) => x(r.lf)).y0(y(0)).y1((r) => y(r.profit_m))).attr('fill', dash.colors[0]).attr('opacity', 0.14);
   const line = d3.line().x((r) => x(r.lf)).y((r) => y(r.profit_m));
   g.append('path').datum(rows).attr('d', line).attr('fill', 'none').attr('stroke', dash.colors[0]).attr('stroke-width', 2).attr('stroke-linecap', 'round').attr('stroke-linejoin', 'round');
   const c = rows.find((r) => r.lf === cur);
@@ -424,7 +453,7 @@ function ryHeat(rows, cur) {
       cell.className = 'ry-heat-cell';
       if (r) {
         const share = Math.round(12 + 58 * Math.abs(r.profit_m) / maxAbs);
-        const col = r.profit_m < 0 ? 'var(--color-bad)' : dash.colors[0];
+        const col = r.profit_m < 0 ? 'var(--color-bad)' : 'var(--color-ok)';
         cell.style.background = `color-mix(in srgb, ${col} ${share}%, transparent)`;
         cell.textContent = d3.format('+.1f')(r.profit_m);
         if (adv === cur.cost_adv && l === cur.lf) cell.classList.add('ry-heat-cur');
@@ -526,10 +555,10 @@ dash.onData(() => {
   });
   if (tRow && aRow && rRow) {
     ryBars(document.getElementById('ry-ret-bars'), [
-      { k: 'broad', hi: tRow.broad_m, color: 'var(--color-bad)' },
-      { k: 'selective', hi: tRow.selective_m, color: dash.colors[0] },
-      { k: 'acc', lo: aRow.low_m, hi: aRow.high_m, color: 'var(--cds-chart-muted)' },
-      { k: 'profit', hi: rRow.route_profit_m, color: 'var(--color-fg-muted)' },
+      { k: 'broad', hi: tRow.broad_m, color: dash.colors[5] },
+      { k: 'selective', hi: tRow.selective_m, color: dash.colors[1] },
+      { k: 'acc', lo: aRow.low_m, hi: aRow.high_m, color: dash.colors[2] },
+      { k: 'profit', hi: rRow.route_profit_m, color: dash.colors[4] },
     ]);
     const cheaper = tRow.selective_m < aRow.low_m ? 'Matching only advance-purchase fares is cheaper than accommodating Ryanair, so expect selective retaliation.'
       : tRow.selective_m > aRow.high_m ? 'Fare-fence leakage now makes selective matching dearer than accommodating Ryanair, so tolerating the entrant becomes rational.'
@@ -545,11 +574,35 @@ dash.onData(() => {
   });
   if (rRow && cRows.length) {
     ryBars(document.getElementById('ry-seat-bars'), [
-      { k: 'surface', hi: cv.surface_pax, color: 'var(--cds-chart-muted)' },
-      { k: 'air', hi: cv.air_pax, color: 'var(--color-fg-muted)' },
-      { k: 'spare', lo: 0, hi: rRow.spare_high, color: 'var(--cds-chart-muted)' },
+      { k: 'surface', hi: cv.surface_pax, color: dash.colors[3] },
+      { k: 'air', hi: cv.air_pax, color: dash.colors[1] },
+      { k: 'spare', lo: 0, hi: rRow.spare_high, color: dash.colors[2] },
       { k: 'cap', hi: rRow.capacity, color: dash.colors[0] },
     ]);
+  }
+
+  const ryPill = (id, text, tone) => { const el = document.getElementById(id); el.textContent = text; el.className = 'ry-pill ' + (text ? 'ry-' + tone : ''); };
+  if (row) {
+    ryPill('ry-pill-profit', row.profit_m >= 0 ? 'Profitable' : 'Loss-making', row.profit_m >= 0 ? 'ok' : 'bad');
+    ryPill('ry-pill-be', row.be_lf > 100 ? 'Impossible' : row.be_lf > p.lf ? 'Above chosen load' : 'Covered by chosen load', row.be_lf > 100 ? 'bad' : row.be_lf > p.lf ? 'warn' : 'ok');
+    const rm = row.runway_months;
+    ryPill('ry-pill-run', rm == null ? 'No cash burn' : rm >= 24 ? 'Over two years' : rm >= 12 ? 'One to two years' : 'Under a year', rm == null || rm >= 24 ? 'ok' : rm >= 12 ? 'warn' : 'bad');
+    const checks = [
+      { ok: row.be_lf <= 95, text: 'Break-even is reachable: ' + d3.format('.1f')(row.be_lf) + '% of seats (95% or less)' },
+      { ok: row.profit_m >= 0, text: 'Operating result is positive: I£' + d3.format('+.2f')(row.profit_m) + 'm a year' },
+      { ok: rm == null || rm >= 12, text: rm == null ? 'Cash lasts: no annual loss' : 'Cash lasts at least a year: ' + d3.format('.0f')(rm) + ' months on I£1m' },
+    ];
+    if (tRow && aRow) checks.push({ ok: tRow.selective_m > aRow.high_m, text: tRow.selective_m > aRow.high_m ? 'Incumbents’ cheapest move is to tolerate Ryanair' : 'Incumbents can retaliate selectively for less than tolerating Ryanair' });
+    const box = document.getElementById('ry-checks');
+    box.replaceChildren(...checks.map((c) => { const d = document.createElement('div'); d.className = 'ry-check'; const b = document.createElement('b'); b.className = c.ok ? 'ry-ok' : 'ry-bad'; b.textContent = c.ok ? '✓ Yes' : '✗ No'; const t = document.createElement('span'); t.textContent = c.text; d.append(b, t); return d; }));
+    const passed = checks.filter((c) => c.ok).length;
+    const viable = row.profit_m >= 0 && (rm == null || rm >= 12);
+    const word = viable ? 'Viable' : row.be_lf <= 95 ? 'Marginal' : 'Not viable';
+    const tone = viable ? 'ok' : row.be_lf <= 95 ? 'warn' : 'bad';
+    document.getElementById('ry-gate-word').textContent = word;
+    document.getElementById('ry-gate-word').className = 'ry-gate-big ry-' + tone;
+    ryPill('ry-gate-pill', passed + ' of ' + checks.length + ' tests passed', tone);
+    document.getElementById('verdict').style.setProperty('--ry-gc', tone === 'ok' ? 'var(--color-ok)' : tone === 'warn' ? 'var(--color-warn)' : 'var(--color-bad)');
   }
   ryTable('ry-facts', cRows, 'key', [{ f: 'item' }, { f: 'value', num: true, fmt: (x) => ryNum(Number(x)) }, { f: 'unit' }, { f: 'source' }]);
   ryTable('ry-costs', E.status === 'ok' ? E.data : [], 'line', [{ f: 'label' }, { f: 'value', num: true, fmt: (x) => d3.format('.1f')(Number(x)) }, { f: 'classification' }]);

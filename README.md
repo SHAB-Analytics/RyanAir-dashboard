@@ -22,6 +22,7 @@
 
 | | |
 |---|---|
+| *Launch verdict* | *Viable, Marginal or Not viable at the chosen scenario, with the four tests behind it.* |
 | *Ryanair's profit and break-even* | *Annual operating result, break-even load factor, margin of safety and cash runway.* |
 | *Sensitivity* | *Profit by load factor, and a grid of profit at every cost and load combination.* |
 | *Incumbent retaliation* | *The cost of matching I£98 on every ticket, matching only restricted fares, or tolerating Ryanair, against the route's profit.* |
