@@ -116,6 +116,8 @@ html,body{margin:0;background:var(--color-bg);color:var(--color-fg)}
 @keyframes ryUp{from{opacity:0;transform:translate(-50%,16px)}to{opacity:1;transform:translate(-50%,0)}}
 @keyframes ryFlash{0%{background:#FBE3CF}100%{background:transparent}}
 @media (prefers-reduced-motion: reduce){.ry-tour,.ry-flash{animation:none}.ry-spot{transition:none}}
+#ry-tour-voice.ry-tap{background:#B4581A;color:#fff;border-color:#B4581A;animation:ryPulse 1.2s ease-in-out infinite}
+@keyframes ryPulse{50%{transform:scale(1.06)}}
 </style>
 </head>
 <body>
@@ -218,6 +220,7 @@ html,body{margin:0;background:var(--color-bg);color:var(--color-fg)}
   <div class="ry-tour-bar"><span id="ry-tour-progress"></span></div>
   <div class="ry-tour-row">
     <div class="ry-tour-dots" id="ry-tour-dots"></div>
+    <button type="button" id="ry-tour-voice" aria-pressed="true">🔊 Voice on</button>
     <button type="button" id="ry-tour-back">Back</button>
     <button type="button" id="ry-tour-pause">Pause</button>
     <button type="button" class="ry-primary" id="ry-tour-next">Next</button>
@@ -673,6 +676,49 @@ dash.onData(() => {
       text: () => 'A low fare alone wasn’t enough. Ryanair survives only if its <b>costs are much lower</b>, because its rivals can hurt it cheaply. Think of opening a café next to two big chains at half their price. <b>Now try the sliders yourself.</b>' },
   ];
   let i = 0, running = false, paused = false, timer = null, token = 0, spot = null;
+  const synth = window.speechSynthesis;
+  let voiceOn = !!synth, voice = null, needTap = false;
+  const pickVoice = () => {
+    if (!synth) return;
+    const vs = synth.getVoices().filter((v) => /^en/i.test(v.lang));
+    const prefer = [/Natural/i, /Aria|Jenny|Sonia|Libby|Ryan/i, /Google UK English Female/i, /Google US English/i, /Samantha|Daniel|Serena|Karen/i, /en-GB/i];
+    for (const re of prefer) { const v = vs.find((x) => re.test(x.name) || re.test(x.lang)); if (v) { voice = v; return; } }
+    voice = vs[0] || null;
+  };
+  if (synth) { pickVoice(); synth.onvoiceschanged = pickVoice; }
+  const forSpeech = (html) => html.replace(/<[^>]+>/g, '')
+    .replace(/I£(\d+(?:\.\d+)?)m\b/g, '$1 million Irish pounds')
+    .replace(/I£(\d+(?:\.\d+)?) million/g, '$1 million Irish pounds')
+    .replace(/I£(\d+(?:\.\d+)?)/g, '$1 Irish pounds')
+    .replace(/[“”]/g, '');
+  function speak(text, maxMs) {
+    return new Promise((resolve) => {
+      if (!voiceOn || !synth) return resolve();
+      synth.cancel();
+      const u = new SpeechSynthesisUtterance(text);
+      if (voice) { u.voice = voice; u.lang = voice.lang; } else u.lang = 'en-GB';
+      u.rate = 0.97; u.pitch = 1;
+      let done = false;
+      const fin = () => { if (!done) { done = true; clearTimeout(guard); resolve(); } };
+      const guard = setTimeout(fin, maxMs);
+      u.onend = fin;
+      u.onerror = (e) => {
+        if (e && e.error === 'not-allowed') { needTap = true; voiceBtn.textContent = '🔊 Tap for sound'; voiceBtn.classList.add('ry-tap'); }
+        fin();
+      };
+      synth.speak(u);
+    });
+  }
+  const voiceBtn = $('ry-tour-voice');
+  if (!synth) voiceBtn.hidden = true;
+  voiceBtn.addEventListener('click', () => {
+    if (needTap) { needTap = false; voiceBtn.classList.remove('ry-tap'); voiceBtn.textContent = '🔊 Voice on'; if (running) show(i); return; }
+    voiceOn = !voiceOn;
+    voiceBtn.textContent = voiceOn ? '🔊 Voice on' : '🔇 Voice off';
+    voiceBtn.setAttribute('aria-pressed', String(voiceOn));
+    if (!voiceOn && synth) synth.cancel();
+    if (running && !paused) show(i);
+  });
   const set = (o) => dash.setParams(o);
   const pause = (ms) => new Promise((r) => setTimeout(r, ms));
   async function sweep(key, from, to, step, ms) {
@@ -714,10 +760,15 @@ dash.onData(() => {
     $('ry-tour-next').textContent = i === steps.length - 1 ? 'Finish' : 'Next';
     const read = Math.max(6500, st.text().replace(/<[^>]+>/g, '').length * 55);
     const my = token;
-    progress(read);
-    if (st.play) { await pause(900); if (my === token) await st.play(); }
-    if (my !== token) return;
-    if (!paused) timer = setTimeout(() => (i < steps.length - 1 ? show(i + 1) : end()), st.play ? 2500 : read);
+    if (paused) { progress(0); return; }
+    const said = voiceOn ? Math.round(read * 1.25) : read;
+    progress(said);
+    const talk = speak(st.title + '. ' + forSpeech(st.text()), said + 8000);
+    const act = st.play ? pause(900).then(() => (my === token ? st.play() : null)) : Promise.resolve();
+    const wait = voiceOn ? Promise.resolve() : pause(st.play ? 0 : read);
+    await Promise.all([talk, act, wait]);
+    if (my !== token || paused) return;
+    timer = setTimeout(() => (i < steps.length - 1 ? show(i + 1) : end()), st.play && !voiceOn ? 2500 : 700);
   }
   function start() {
     dash.resetParams();
@@ -729,6 +780,7 @@ dash.onData(() => {
   }
   function end() {
     token++; clearTimeout(timer); running = false;
+    if (synth) synth.cancel();
     if (spot) spot.classList.remove('ry-spot');
     spot = null;
     $('ry-tour').hidden = true;
@@ -742,7 +794,7 @@ dash.onData(() => {
   $('ry-tour-pause').addEventListener('click', () => {
     paused = !paused;
     $('ry-tour-pause').textContent = paused ? 'Play' : 'Pause';
-    if (paused) { clearTimeout(timer); progress(0); } else show(i);
+    if (paused) { token++; clearTimeout(timer); progress(0); if (synth) synth.cancel(); } else show(i);
   });
   document.addEventListener('keydown', (e) => {
     if (!running) return;

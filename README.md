@@ -10,7 +10,7 @@
 
 <p><img src="assets/h-what-you-can-test.svg" alt="What you can test" height="44"></p>
 
-*New to the case? Click* Take the guided tour *at the top of the dashboard. It walks you through every section in plain language and moves the sliders for you, so you can watch the numbers change.*
+*New to the case? Click* Take the guided tour *at the top of the dashboard. It walks you through every section in plain language and moves the sliders for you, so you can watch the numbers change. A voice reads each step aloud; switch it off with the* 🔊 Voice *button.*
 
 *Move five sliders and every figure, chart and table updates instantly:*
 
