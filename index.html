@@ -92,13 +92,37 @@ html,body{margin:0;background:var(--color-bg);color:var(--color-fg)}
 .ry-check{display:flex;gap:10px;align-items:baseline}
 .ry-check b{min-width:2.4rem;font-size:var(--cds-font-size-caption)}
 .ry-card.ry-gate{align-items:center;text-align:left}
+
+.ry-tour-btn{align-self:flex-start;display:inline-flex;align-items:center;gap:8px;font:inherit;font-size:var(--cds-font-size-body);font-weight:600;color:#FFFFFC;background:#B4581A;border:0;border-radius:999px;padding:9px 18px;cursor:pointer;box-shadow:0 4px 14px rgba(180,88,26,.28)}
+.ry-tour-btn:hover{background:#9C4A14}.ry-tour-btn:focus-visible{outline:3px solid #2E4A6B;outline-offset:2px}
+.ry-topline{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between}
+.ry-spot{position:relative;z-index:1001;border-radius:12px;background:var(--color-bg);box-shadow:0 0 0 4px #B4581A,0 0 0 9999px rgba(15,23,40,.58)!important;transition:box-shadow .35s ease}
+.ry-tour{position:fixed;left:50%;transform:translateX(-50%);bottom:max(18px,env(safe-area-inset-bottom,0px));width:min(660px,calc(100vw - 32px));z-index:1002;background:#FFFFFC;color:#1F2A37;border-radius:14px;border-top:6px solid #B4581A;box-shadow:0 18px 50px rgba(10,20,40,.35);padding:18px 20px 14px;display:flex;flex-direction:column;gap:10px;animation:ryUp .35s ease}
+.ry-tour[hidden]{display:none}
+.ry-tour-step{font-size:12px;letter-spacing:.12em;text-transform:uppercase;font-weight:700;color:#B4581A}
+.ry-tour-title{margin:0;font-family:'Source Serif 4',Georgia,serif;font-size:24px;font-weight:600;line-height:1.2}
+.ry-tour-text{margin:0;font-size:15.5px;line-height:1.55;color:#33404F}
+.ry-tour-text b{color:#1F2A37}
+.ry-tour-bar{height:4px;border-radius:2px;background:#ECE8DF;overflow:hidden}
+.ry-tour-bar span{display:block;height:100%;width:0;background:linear-gradient(90deg,#2E4A6B,#B4581A)}
+.ry-tour-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.ry-tour-dots{display:flex;gap:6px;flex:1}
+.ry-tour-dots i{width:8px;height:8px;border-radius:50%;background:#DCDFD8}
+.ry-tour-dots i.on{background:#B4581A}
+.ry-tour-row button{font:inherit;font-size:13.5px;font-weight:600;border-radius:8px;padding:6px 12px;cursor:pointer;border:1px solid #DCDFD8;background:#FFFFFC;color:#1F2A37}
+.ry-tour-row button.ry-primary{background:#2E4A6B;border-color:#2E4A6B;color:#FFFFFC}
+.ry-tour-row button:focus-visible{outline:3px solid #B4581A;outline-offset:1px}
+.ry-flash{animation:ryFlash 1s ease}
+@keyframes ryUp{from{opacity:0;transform:translate(-50%,16px)}to{opacity:1;transform:translate(-50%,0)}}
+@keyframes ryFlash{0%{background:#FBE3CF}100%{background:transparent}}
+@media (prefers-reduced-motion: reduce){.ry-tour,.ry-flash{animation:none}.ry-spot{transition:none}}
 </style>
 </head>
 <body>
 <main class="ry-page">
 <div class="ry">
   <div class="ry-strip"></div>
-  <span class="ry-ribbon">Scenario model · Figures are scenarios built on case data, not forecasts</span>
+  <div class="ry-topline"><span class="ry-ribbon">Scenario model · Figures are scenarios built on case data, not forecasts</span><button type="button" class="ry-tour-btn" id="ry-tour-start">▶ Take the guided tour</button></div>
   <header id="overview">
     <h1 class="ry-title">Ryanair (A) scenario dashboard</h1>
     <p class="ry-take">At a <b class="ry-p-cost">—</b> seat-cost advantage, a <b class="ry-p-lf">—</b> load factor and a <b class="ry-p-fare">—</b> fare, Ryanair’s annual operating result is I£<b class="ry-scn dash-skeleton" data-source="scenarios" data-field="profit_m">—</b>m, and it breaks even at <b class="ry-scn dash-skeleton" data-source="scenarios" data-field="be_lf">—</b>% load. Matching I£98 on every ticket would cost the incumbents I£<b class="ry-ret dash-skeleton" data-source="retaliation" data-field="broad_m">—</b>m a year against a route profit of I£<b class="dash-skeleton" data-source="route_economics" data-field="route_profit_m">—</b>m.</p>
@@ -123,7 +147,7 @@ html,body{margin:0;background:var(--color-bg);color:var(--color-fg)}
   </section>
 
   <h2 id="ryanair" class="ry-section">Ryanair at this scenario</h2>
-  <div class="ry-tiles">
+  <div class="ry-tiles" id="ry-tiles">
     <div class="ry-tile"><span class="ry-tile-label">Annual operating result</span><span class="ry-big"><span>I£</span><span class="ry-scn ry-profit dash-skeleton" data-source="scenarios" data-field="profit_m">—</span><span>m</span></span><span class="ry-pill" id="ry-pill-profit"></span><span class="ry-note">Contribution minus flight costs</span></div>
     <div class="ry-tile"><span class="ry-tile-label">Break-even load factor</span><span class="ry-big"><span class="ry-scn dash-skeleton" data-source="scenarios" data-field="be_lf">—</span><span>%</span></span><span class="ry-pill" id="ry-pill-be"></span><span class="ry-note">Over 100% means impossible</span></div>
     <div class="ry-tile"><span class="ry-tile-label">Margin of safety</span><span class="ry-big"><span class="ry-scn dash-skeleton" data-source="scenarios" data-field="margin_safety">—</span><span>%</span></span><span class="ry-note">Passengers above break-even</span></div>
@@ -186,6 +210,20 @@ html,body{margin:0;background:var(--color-bg);color:var(--color-fg)}
   <p class="ry-note">Method: incumbent flight cost per seat = (cost per passenger − passenger-variable cost) × 65% load. Ryanair keeps selling cost at the Exhibit 4 share of fare. Capacity assumes 365 days of operation. Analysis as of April 1986; no hindsight.</p>
 </div>
 <p class="ry-note ry-foot-credit">Based on Rivkin, J. W. (2007), <i>Dogfight over Europe: Ryanair (A)</i>, HBS Case 9-700-115. Figures are scenarios, not forecasts.</p>
+
+<div class="ry-tour" id="ry-tour" role="dialog" aria-live="polite" aria-label="Guided tour" hidden>
+  <span class="ry-tour-step" id="ry-tour-step"></span>
+  <h2 class="ry-tour-title" id="ry-tour-title"></h2>
+  <p class="ry-tour-text" id="ry-tour-text"></p>
+  <div class="ry-tour-bar"><span id="ry-tour-progress"></span></div>
+  <div class="ry-tour-row">
+    <div class="ry-tour-dots" id="ry-tour-dots"></div>
+    <button type="button" id="ry-tour-back">Back</button>
+    <button type="button" id="ry-tour-pause">Pause</button>
+    <button type="button" class="ry-primary" id="ry-tour-next">Next</button>
+    <button type="button" id="ry-tour-close" aria-label="Close tour">✕</button>
+  </div>
+</div>
 </main>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
 <script>
@@ -607,6 +645,114 @@ dash.onData(() => {
   ryTable('ry-facts', cRows, 'key', [{ f: 'item' }, { f: 'value', num: true, fmt: (x) => ryNum(Number(x)) }, { f: 'unit' }, { f: 'source' }]);
   ryTable('ry-costs', E.status === 'ok' ? E.data : [], 'line', [{ f: 'label' }, { f: 'value', num: true, fmt: (x) => d3.format('.1f')(Number(x)) }, { f: 'classification' }]);
 });
+
+(() => {
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const $ = (id) => document.getElementById(id);
+  const verdictWord = () => ($('ry-gate-word').textContent || '').trim();
+  const steps = [
+    { el: 'overview', title: 'What this dashboard is about',
+      text: () => 'In 1986, Ryanair planned to fly Dublin to London for <b>less than half</b> what Aer Lingus and British Airways charged. This dashboard asks two questions: <b>can Ryanair make money at that price</b>, and <b>is it worth the big airlines’ while to fight back?</b>' },
+    { el: 'verdict', title: 'Start with the verdict',
+      text: () => 'This card sums up the current scenario as <b>Viable, Marginal or Not viable</b>, with the four tests behind it. In the base case the verdict is <b>' + verdictWord() + '</b>: break-even is reachable, but Ryanair is still losing a little money.' },
+    { el: 'controls', title: 'The sliders are the “what ifs”',
+      text: () => 'How cheaply Ryanair flies, how full its planes are, what fare it actually collects, and how the big airlines react. <b>Watch the load factor rise from 60% to 90%</b>, and see every number on the page follow it.',
+      play: async () => { await sweep('lf', 60, 90, 5, 450); await pause(700); set({ lf: 70 }); } },
+    { el: 'ry-tiles', title: 'Six numbers: is Ryanair making money?',
+      text: () => 'The <b>yearly profit or loss</b>, how full planes must be to <b>break even</b>, the safety margin, what each passenger contributes, the cost of flying a seat, and <b>how long the I£1 million would last</b>. The coloured pills flag good and bad news.' },
+    { el: 'profit-by-load', title: 'Profit rises as planes fill up',
+      text: () => 'Each extra passenger adds about I£79, but the cost of flying the plane is fixed. Where the orange line crosses zero, at the dashed line, is the <b>break-even point: about 74% full</b> in the base case.' },
+    { el: 'heatmap', title: 'Every combination at once',
+      text: () => '<b>Red</b> means losing money, <b>green</b> means making it. Ryanair only turns green in one corner: where its seats are <b>much cheaper to fly</b> and its planes are <b>well filled</b>. The outlined cell is the current scenario.' },
+    { el: 'retaliation-cost', title: 'Now the big airlines’ side',
+      text: () => 'Matching the low fare for <b>everyone</b> would cost them about <b>I£34m a year</b>, six times what the route earns, so they’d only cut prices selectively. <b>Watch</b> what happens as more full-fare travellers switch to the cheap fares.',
+      play: async () => { await sweep('leak', 0, 25, 1, 160); await pause(900); set({ leak: 10 }); } },
+    { el: 'seats', title: 'Why fighting back is cheap',
+      text: () => 'The big airlines’ <b>empty seats</b> outnumber Ryanair’s <b>entire capacity</b>. Keeping a passenger costs them very little, because the seat would otherwise fly empty.' },
+    { el: 'overview', title: 'The takeaway',
+      text: () => 'A low fare alone wasn’t enough. Ryanair survives only if its <b>costs are much lower</b>, because its rivals can hurt it cheaply. Think of opening a café next to two big chains at half their price. <b>Now try the sliders yourself.</b>' },
+  ];
+  let i = 0, running = false, paused = false, timer = null, token = 0, spot = null;
+  const set = (o) => dash.setParams(o);
+  const pause = (ms) => new Promise((r) => setTimeout(r, reduce ? 0 : ms));
+  async function sweep(key, from, to, step, ms) {
+    const my = token;
+    if (reduce) { set({ [key]: to }); return; }
+    for (let v = from; v <= to; v += step) {
+      if (my !== token) return;
+      set({ [key]: v });
+      const el = document.querySelector(key === 'lf' ? '#ry-lf-out' : '#ry-leak-out');
+      if (el) { el.classList.remove('ry-flash'); void el.offsetWidth; el.classList.add('ry-flash'); }
+      await pause(ms);
+    }
+  }
+  const dots = $('ry-tour-dots');
+  steps.forEach(() => dots.appendChild(document.createElement('i')));
+  function highlight(id) {
+    if (spot) spot.classList.remove('ry-spot');
+    spot = $(id);
+    if (!spot) return;
+    spot.classList.add('ry-spot');
+    const top = spot.getBoundingClientRect().top + window.scrollY - 24;
+    window.scrollTo({ top: Math.max(0, top), behavior: reduce ? 'auto' : 'smooth' });
+  }
+  function progress(ms) {
+    const bar = $('ry-tour-progress');
+    bar.style.transition = 'none'; bar.style.width = '0%'; void bar.offsetWidth;
+    if (!paused && !reduce) { bar.style.transition = `width ${ms}ms linear`; bar.style.width = '100%'; }
+  }
+  async function show(n) {
+    clearTimeout(timer);
+    token++;
+    i = Math.max(0, Math.min(steps.length - 1, n));
+    const st = steps[i];
+    highlight(st.el);
+    $('ry-tour-step').textContent = `Step ${i + 1} of ${steps.length}`;
+    $('ry-tour-title').textContent = st.title;
+    $('ry-tour-text').innerHTML = st.text();
+    [...dots.children].forEach((d, k) => d.classList.toggle('on', k <= i));
+    $('ry-tour-back').disabled = i === 0;
+    $('ry-tour-next').textContent = i === steps.length - 1 ? 'Finish' : 'Next';
+    const read = Math.max(6500, st.text().replace(/<[^>]+>/g, '').length * 55);
+    const my = token;
+    progress(read);
+    if (st.play) { await pause(900); if (my === token) await st.play(); }
+    if (my !== token) return;
+    if (!paused) timer = setTimeout(() => (i < steps.length - 1 ? show(i + 1) : end()), st.play ? 2500 : read);
+  }
+  function start() {
+    dash.resetParams();
+    running = true; paused = false;
+    $('ry-tour-pause').textContent = 'Pause';
+    $('ry-tour').hidden = false;
+    show(0);
+    $('ry-tour-next').focus();
+  }
+  function end() {
+    token++; clearTimeout(timer); running = false;
+    if (spot) spot.classList.remove('ry-spot');
+    spot = null;
+    $('ry-tour').hidden = true;
+    dash.resetParams();
+    $('ry-tour-start').focus();
+  }
+  $('ry-tour-start').addEventListener('click', start);
+  $('ry-tour-next').addEventListener('click', () => (i < steps.length - 1 ? show(i + 1) : end()));
+  $('ry-tour-back').addEventListener('click', () => show(i - 1));
+  $('ry-tour-close').addEventListener('click', end);
+  $('ry-tour-pause').addEventListener('click', () => {
+    paused = !paused;
+    $('ry-tour-pause').textContent = paused ? 'Play' : 'Pause';
+    if (paused) { clearTimeout(timer); progress(0); } else show(i);
+  });
+  document.addEventListener('keydown', (e) => {
+    if (!running) return;
+    if (e.key === 'Escape') end();
+    else if (e.key === 'ArrowRight') show(i + 1);
+    else if (e.key === 'ArrowLeft') show(i - 1);
+  });
+  if (location.hash === '#tour') setTimeout(start, 600);
+})();
 </script>
 </body>
 </html>
